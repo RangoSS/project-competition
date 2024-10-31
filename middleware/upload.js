@@ -1,21 +1,18 @@
-// upload.js
-import multer from 'multer';
+import mongoose from 'mongoose';
 import { GridFsStorage } from 'multer-gridfs-storage';
-import dotenv from 'dotenv';
-
-dotenv.config(); // Load environment variables
+import multer from 'multer';
 
 const storage = new GridFsStorage({
-    url: process.env.URI, // MongoDB URI from environment variables
-    options: { useNewUrlParser: true, useUnifiedTopology: true },
+    db: mongoose.connection, // Use the established database connection
     file: (req, file) => {
         const match = ['image/png', 'image/jpg', 'image/jpeg'];
+
         if (match.indexOf(file.mimetype) === -1) {
             return `${Date.now()}-any-name-${file.originalname}`;
         }
 
         return {
-            bucketName: 'photos', // The GridFS bucket name where images will be stored
+            bucketName: 'photos', // Bucket name must match the reference in the schema
             filename: `${Date.now()}-any-name-${file.originalname}`
         };
     }

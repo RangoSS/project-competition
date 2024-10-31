@@ -10,6 +10,7 @@ const router = express.Router();
 
 // POST endpoint to add an employee
 router.post('/todo', createTodo);
+
 router.post('/user-info', upload.single('photo'), postUser);
 
 // GET endpoint to retrieve all employees
