@@ -43,16 +43,23 @@ res.send({
 export const postUser = async (req, res) => {
     const { name, surname, idNumber, email, password, role } = req.body;
     
-    // Use req.file.id to get the reference to the uploaded photo in GridFS
-    const photo = req.file ? req.file.id : null;
-       // Hash the password
+       // Log req.file to check if the file is uploaded correctly
+    console.log("File received:", req.file);
+    // Convert uploaded file to base64
+    let photo = null;
+    if (req.file) {
+        const buffer = req.file.buffer; // Get the buffer from req.file
+        photo = buffer.toString('base64'); // Convert the buffer to a base64 string
+    }
+    
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
-        const userDetails = {  name, surname, idNumber, email, password: hashedPassword, role, photo };
+        const userDetails = { name, surname, idNumber, email, password: hashedPassword, role, photo };
         
         // Create a new user in the database
         const result = await User.create(userDetails);
-        console.log("check data", userDetails);
+        console.log("User Details:", userDetails);
         
         res.send({
             success: true,
@@ -68,7 +75,25 @@ export const postUser = async (req, res) => {
         });
     }
 };
-
+//get users data
+export const getUser= async(req, res) => {
+    try{
+        const result =await User.find()
+        console.log()
+        res.send({
+            success:true,
+            message:"User Retrieved Successfuly",
+            data:result
+        });
+    }catch(error){
+        res.send({
+            success:false,
+            message:"unable to retrieve user list data",
+            data:result
+        });
+    }
+   
+};
 
 
 {/*  

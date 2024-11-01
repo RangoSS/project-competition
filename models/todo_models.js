@@ -15,10 +15,8 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, required: true },
-    photo: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'photos', // Reference to the GridFS bucket
-    }
+    photo: {type: String }
+    
 });
 
 export const User = mongoose.models.User || model("User", userSchema);

@@ -3,7 +3,8 @@ import upload from '../middleware/upload.js'; // File upload middleware (if need
 import { 
     postUser, 
     createTodo, 
-    getTodo
+    getTodo,
+    getUser
 } from '../controller/userController.js'; // Importing from your controller
 
 const router = express.Router();
@@ -15,6 +16,9 @@ router.post('/user-info', upload.single('photo'), postUser);
 
 // GET endpoint to retrieve all employees
 router.get('/todo', getTodo);
+
+// GET endpoint to retrieve all employees
+router.get('/user-info', getUser);
 
 // GET endpoint to count employees
 //router.get('/employees/count', getAllEmployeesCount);
