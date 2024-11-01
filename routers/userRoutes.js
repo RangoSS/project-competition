@@ -19,7 +19,7 @@ const router = express.Router();
 // POST endpoint to add an employee
 router.post('/todo', createTodo);
 
-router.post('/api/login', loginUser); // Login user
+router.post('/login', loginUser); // Login user
 
 router.post('/recipe',authenticateJWT,authorize('create_recipes'), postRecipe);
 

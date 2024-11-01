@@ -6,12 +6,31 @@ import bcrypt from 'bcrypt';
 import { roles} from "../roles/roles.js"
 
 
+
+
+export const loginUser = async (req, res) => {
+    const { email, password } = req.body;
+
+    // Hardcoded test credentials
+    const testEmail = "testing@gmail.com";
+    const testPassword = "Testing@123";
+
+    // Check if email and password match the hardcoded values
+    if (email === testEmail && password === testPassword) {
+        res.send({ success: true, message: "Login successful" });
+    } else {
+        res.status(401).send({ success: false, message: "Invalid credentials" });
+    }
+};
+{  /*      
 // User authentication
 export const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
+
     try {
         const user = await User.findOne({ email });
+        console.log("User found:", user);
         if (!user) {
             return res.status(404).send({ success: false, message: 'User not found' });
         }
@@ -33,6 +52,7 @@ export const loginUser = async (req, res) => {
         res.status(500).send({ success: false, message: 'Server error' });
     }
 };
+*/ }
 
 export const getTodo= async(req, res) => {
     try{
@@ -52,6 +72,8 @@ export const getTodo= async(req, res) => {
     }
    
 };
+
+
 //todo api
 export const createTodo= async(req,res)=>{
     const todoDetails =req.body
