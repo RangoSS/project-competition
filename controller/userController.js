@@ -3,6 +3,37 @@
 import { Todo, User,Recipe } from "../models/todo_models.js";
 import bcrypt from 'bcrypt';
 
+import { roles} from "../roles/roles.js"
+
+
+// User authentication
+export const loginUser = async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).send({ success: false, message: 'User not found' });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).send({ success: false, message: 'Invalid password' });
+        }
+
+        const token = jwt.sign({ id: user._id, role: user.role }, 'your_jwt_secret', { expiresIn: '1h' });
+        res.send({
+            success: true,
+            message: 'Login successful',
+            token,
+            user: { name: user.name, email: user.email, role: user.role, photo: user.photo }
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ success: false, message: 'Server error' });
+    }
+};
+
 export const getTodo= async(req, res) => {
     try{
         const result =await Todo.find()
@@ -42,57 +73,47 @@ res.send({
 // Endpoint for creating a user with a photo
 export const postUser = async (req, res) => {
     const { name, surname, idNumber, email, password, role } = req.body;
-    
-       // Log req.file to check if the file is uploaded correctly
+
+    // Validate role
+    if (!Object.values(roles).includes(role)) {
+        return res.status(400).send({
+            success: false,
+            message: "Invalid role assigned to the user.",
+        });
+    }
+
+    // Log req.file to check if the file is uploaded correctly
     console.log("File received:", req.file);
+    
     // Convert uploaded file to base64
     let photo = null;
     if (req.file) {
         const buffer = req.file.buffer; // Get the buffer from req.file
         photo = buffer.toString('base64'); // Convert the buffer to a base64 string
     }
-    
+
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
         const userDetails = { name, surname, idNumber, email, password: hashedPassword, role, photo };
-        
+
         // Create a new user in the database
         const result = await User.create(userDetails);
         console.log("User Details:", userDetails);
-        
+
         res.send({
             success: true,
             message: "User created successfully",
-            data: result
+            data: result,
         });
     } catch (error) {
         console.error(error);
         res.status(400).send({
             success: false,
             message: "User creation failed",
-            error: error.message
+            error: error.message,
         });
     }
-};
-//get users data
-export const getUser= async(req, res) => {
-    try{
-        const result =await User.find()
-        console.log()
-        res.send({
-            success:true,
-            message:"User Retrieved Successfuly",
-            data:result
-        });
-    }catch(error){
-        res.send({
-            success:false,
-            message:"unable to retrieve user list data",
-            data:result
-        });
-    }
-   
 };
 
 //recipe 
