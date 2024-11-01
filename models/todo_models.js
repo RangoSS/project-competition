@@ -20,3 +20,18 @@ const userSchema = new mongoose.Schema({
 });
 
 export const User = mongoose.models.User || model("User", userSchema);
+
+// Recipe Schema
+const recipeSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    ingredients: { type: String, required: true },
+    instructions: { type: String, required: true },
+    category: { type: String, required: true },
+    preparationTime: { type: Number, required: true },  // Changed to Number
+    cookingTime: { type: Number, required: true },      // Changed to Number
+    servings: { type: Number, required: true },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Reference to User
+    createdAt: { type: Date, default: Date.now } // Optional: Track creation date
+});
+
+export const Recipe = mongoose.models.Recipe || model("Recipe", recipeSchema);

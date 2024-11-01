@@ -1,6 +1,6 @@
 
 //import {Todo,User} from "../models/todo_models.js"
-import { Todo, User } from "../models/todo_models.js";
+import { Todo, User,Recipe } from "../models/todo_models.js";
 import bcrypt from 'bcrypt';
 
 export const getTodo= async(req, res) => {
@@ -95,6 +95,52 @@ export const getUser= async(req, res) => {
    
 };
 
+//recipe 
+// Endpoint for creating a recipe
+export const postRecipe = async (req, res) => {
+    try {
+        const { name, ingredients, instructions, category, preparationTime, cookingTime, servings } = req.body;
+
+        // Log the received recipe data to check if everything is uploaded correctly
+        console.log("Received recipe data:", { name, ingredients, instructions, category, preparationTime, cookingTime, servings });
+
+        // Validate the required fields
+        if (!name || !ingredients || !instructions || !category || !preparationTime || !cookingTime || !servings) {
+            return res.status(400).send({
+                success: false,
+                message: "All fields are required"
+            });
+        }
+
+        // Prepare recipe details
+        const recipeDetails = {
+            name,
+            ingredients,
+            instructions,
+            category,
+            preparationTime,
+            cookingTime,
+            servings
+        };
+
+        // Create a new recipe in the database
+        const result = await Recipe.create(recipeDetails);
+        console.log("Recipe Details:", recipeDetails);
+        
+        res.send({
+            success: true,
+            message: "Recipe created successfully",
+            data: result
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(400).send({
+            success: false,
+            message: "Recipe creation failed",
+            error: error.message
+        });
+    }
+};
 
 {/*  
 const bucket = new GridFSBucket(mongoose.connection.db, {

@@ -4,13 +4,16 @@ import {
     postUser, 
     createTodo, 
     getTodo,
-    getUser
+    getUser,
+    postRecipe
 } from '../controller/userController.js'; // Importing from your controller
 
 const router = express.Router();
 
 // POST endpoint to add an employee
 router.post('/todo', createTodo);
+
+router.post('/recipe', postRecipe);
 
 router.post('/user-info', upload.single('photo'), postUser);
 
