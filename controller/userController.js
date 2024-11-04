@@ -1,6 +1,16 @@
+
+import { 
+    getDoc, 
+    doc, 
+    setDoc, 
+    serverTimestamp,
+    where,
+    collection,
+    query,
+    getDocs // Include this line
+} from 'firebase/firestore'; 
 // /controller/userController.js
 import { auth, db ,storage  } from '../config/firebase.js'; // Make sure these are correctly defined in your Firebase config
-import { getDoc, doc, setDoc, serverTimestamp ,where,collection,query } from 'firebase/firestore'; // Combine imports from firebase/firestore
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -131,7 +141,6 @@ export const addProduct = async (req, res) => {
     }
 };
 
-// Function to get products, optionally filtered by category
 export const getProducts = async (req, res) => {
     const { category } = req.query; // Get the category filter from query params
 
@@ -150,8 +159,8 @@ export const getProducts = async (req, res) => {
         const products = snapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data(),
-            // Convert Base64 to image URL if needed for frontend display
-            photo: doc.data().photo ? `data:image/jpeg;base64,${doc.data().photo}` : null // Assuming the image is in JPEG format
+            // Directly use the photo URL stored in Firestore
+            photo: doc.data().photo || null // No need to convert Base64, just take the URL
         }));
 
         return res.status(200).json(products);
