@@ -5,12 +5,13 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAvGYpE3STNTeGgafQvpPXnm-R7OK046-0",
-    authDomain: "competition-d9722.firebaseapp.com",
-    projectId: "competition-d9722",
-    storageBucket: "competition-d9722.appspot.com",
-    messagingSenderId: "839273917273",
-    appId: "1:839273917273:web:9c52726aa02c9e48bd7a48",
+    apiKey: "AIzaSyAZaZMp2CEPQQyuRUG0zPNXd0SyaChTwJc",
+    authDomain: "hotel-project-5dc93.firebaseapp.com",
+    projectId: "hotel-project-5dc93",
+    storageBucket: "hotel-project-5dc93.appspot.com",
+    messagingSenderId: "1041628659171",
+    appId: "1:1041628659171:web:af3d439a114c0759ce34d6",
+    measurementId: "G-5LYEECGSPC"
 };
 
 // Initialize Firebase
@@ -27,3 +28,5 @@ console.log("Firebase Firestore:", db);
 console.log("Firebase Storage:", storage);
 
 export { auth, db, storage };
+
+// Import the functions you need from the SDKs you need

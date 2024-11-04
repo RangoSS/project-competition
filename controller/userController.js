@@ -1,12 +1,17 @@
 // /controller/userController.js
-import { auth, db } from '../config/firebase.js'; // Make sure these are correctly defined in your Firebase config
-import { getDoc, doc, setDoc, serverTimestamp } from 'firebase/firestore'; // Combine imports from firebase/firestore
+import { auth, db ,storage  } from '../config/firebase.js'; // Make sure these are correctly defined in your Firebase config
+import { getDoc, doc, setDoc, serverTimestamp ,where,collection,query } from 'firebase/firestore'; // Combine imports from firebase/firestore
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import multer from 'multer';
+// Import the necessary functions from Firebase Storage
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Add these imports at the top of your file
 
 
 const JWT_SECRET = 'your_jwt_secret_key'; // Ensure this is kept secure, ideally in an environment variable
+// Configure multer to handle file uploads
+const upload = multer({ storage: multer.memoryStorage() });
 
 export const CreateUser = async (req, res) => {
     const { email, password, username, displayName, phone, address, country, role } = req.body;
@@ -77,5 +82,81 @@ export const LoginUser = async (req, res) => {
         } else {
             return res.status(500).json({ error: error.message });
         }
+    }
+};
+
+export const addProduct = async (req, res) => {
+    const { name, type, storeLocation, totalQuantity, description, category, contact, email } = req.body;
+    const file = req.file;  // Access the uploaded file here
+
+    try {
+        // Create the product object without the photo initially
+        const product = {
+            name,
+            type,
+            storeLocation,
+            totalQuantity,
+            description,
+            category,
+            contact,
+            email,
+            createdAt: serverTimestamp(),
+        };
+
+        // Save product to Firestore and get the generated product ID
+        const productRef = doc(collection(db, 'products')); // Automatically generate a unique ID
+        await setDoc(productRef, product);
+        
+        let photoUrl = '';
+
+        // Check if there is a file to upload
+        if (file) {
+            // Create a reference to the file in Firebase Storage using the product ID
+            const storageRef = ref(storage, `products/${productRef.id}/${file.originalname}`); // Use product ID
+
+            // Upload the file to Firebase Storage
+            await uploadBytes(storageRef, file.buffer);
+
+            // Get the download URL for the uploaded file
+            photoUrl = await getDownloadURL(storageRef);
+        }
+
+        // Update the product with the photo URL
+        await setDoc(productRef, { photo: photoUrl }, { merge: true });
+
+        return res.status(201).json({ message: 'Product added successfully', productId: productRef.id });
+    } catch (error) {
+        console.error('Error adding product:', error);
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+// Function to get products, optionally filtered by category
+export const getProducts = async (req, res) => {
+    const { category } = req.query; // Get the category filter from query params
+
+    try {
+        const productsCollection = collection(db, 'products');
+        let productsQuery;
+
+        // If a category is provided, filter products by category
+        if (category) {
+            productsQuery = query(productsCollection, where('category', '==', category));
+        } else {
+            productsQuery = productsCollection; // Get all products if no category is specified
+        }
+
+        const snapshot = await getDocs(productsQuery);
+        const products = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+            // Convert Base64 to image URL if needed for frontend display
+            photo: doc.data().photo ? `data:image/jpeg;base64,${doc.data().photo}` : null // Assuming the image is in JPEG format
+        }));
+
+        return res.status(200).json(products);
+    } catch (error) {
+        console.error('Error retrieving products:', error);
+        return res.status(500).json({ error: error.message });
     }
 };
