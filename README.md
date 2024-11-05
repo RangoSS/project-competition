@@ -1,3 +1,5 @@
+![front-end](https://github.com/user-attachments/assets/8cba4f17-7f82-473a-af11-b09767bfa963)
+
 # Bamboo - Online Shopping Application
 
 ## Overview
