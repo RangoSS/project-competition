@@ -1,4 +1,4 @@
-
+![bamboo_admin](https://github.com/user-attachments/assets/77544585-e9e4-4bc7-9752-5f4dc651aa8c)
 # Bamboo - Online Store
 
 ## Overview
