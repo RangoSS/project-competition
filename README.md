@@ -1,70 +1,182 @@
-# Getting Started with Create React App
+// Main Application Component
+function App() {
+    // State for managing user authentication and user data
+    const [user, setUser] = useState(null);
+    
+    // Function to handle user login
+    function login(credentials) {
+        // Call API to authenticate user
+        // If successful, set user state with user data
+    }
+    
+    // Function to handle user logout
+    function logout() {
+        // Clear user data from state and local storage
+    }
+    
+    // Check if user is logged in
+    if (!user) {
+        return <LoginPage onLogin={login} />; // Show login page
+    }
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+    // Render the main application layout with navigation
+    return (
+        <div>
+            <Navbar user={user} onLogout={logout} />
+            <Routes>
+                <Route path="/home" element={<HomePage user={user} />} />
+                <Route path="/profile" element={<ProfilePage user={user} />} />
+                <Route path="/shopping-list" element={<ShoppingListPage user={user} />} />
+                <Route path="/register" element={<RegistrationPage />} />
+            </Routes>
+        </div>
+    );
+}
 
-## Available Scripts
+// Navbar Component
+function Navbar({ user, onLogout }) {
+    return (
+        <nav>
+            <span>Welcome, {user.username}</span>
+            <button onClick={onLogout}>Logout</button>
+        </nav>
+    );
+}
 
-In the project directory, you can run:
+// Login Page Component
+function LoginPage({ onLogin }) {
+    const [credentials, setCredentials] = useState({ email: '', password: '' });
 
-### `npm start`
+    function handleSubmit(event) {
+        event.preventDefault();
+        onLogin(credentials); // Call login function with credentials
+    }
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+    return (
+        <form onSubmit={handleSubmit}>
+            <input type="email" onChange={...} />
+            <input type="password" onChange={...} />
+            <button type="submit">Login</button>
+        </form>
+    );
+}
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+// Registration Page Component
+function RegistrationPage() {
+    const [userData, setUserData] = useState({ email: '', password: '', name: '', surname: '', cell: '' });
 
-### `npm test`
+    function handleSubmit(event) {
+        event.preventDefault();
+        // Call API to register user with userData
+    }
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+    return (
+        <form onSubmit={handleSubmit}>
+            <input type="text" onChange={...} />
+            <button type="submit">Register</button>
+        </form>
+    );
+}
 
-### `npm run build`
+// Profile Page Component
+function ProfilePage({ user }) {
+    const [userInfo, setUserInfo] = useState(user);
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    function handleUpdate(event) {
+        event.preventDefault();
+        // Call API to update user profile with userInfo
+    }
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+    return (
+        <form onSubmit={handleUpdate}>
+            <input type="text" value={userInfo.name} onChange={...} />
+            <button type="submit">Update Profile</button>
+        </form>
+    );
+}
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+// Shopping List Page Component
+function ShoppingListPage({ user }) {
+    const [shoppingLists, setShoppingLists] = useState([]);
 
-### `npm run eject`
+    useEffect(() => {
+        // Fetch shopping lists for the logged-in user from the server
+    }, [user]);
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+    function addShoppingList(newList) {
+        // Call API to add new shopping list
+    }
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+    function updateShoppingList(updatedList) {
+        // Call API to update existing shopping list
+    }
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+    function deleteShoppingList(id) {
+        // Call API to delete shopping list by id
+    }
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+    return (
+        <div>
+            <h2>Your Shopping Lists</h2>
+            <button onClick={addShoppingList}>Add Shopping List</button>
+            {shoppingLists.map(list => (
+                <ShoppingListItem 
+                    key={list.id} 
+                    list={list} 
+                    onUpdate={updateShoppingList} 
+                    onDelete={deleteShoppingList} 
+                />
+            ))}
+        </div>
+    );
+}
 
-## Learn More
+// Shopping List Item Component
+function ShoppingListItem({ list, onUpdate, onDelete }) {
+    function handleUpdate() {
+        // Open modal or form to edit the shopping list
+        onUpdate(list); // Update list on form submit
+    }
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+    return (
+        <div>
+            <h3>{list.name}</h3>
+            <button onClick={handleUpdate}>Edit</button>
+            <button onClick={() => onDelete(list.id)}>Delete</button>
+        </div>
+    );
+}
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+// Main Data Fetching Logic
+function fetchShoppingLists(userId) {
+    // Fetch shopping lists from JSON server for the logged-in user
+}
 
-### Code Splitting
+// API Calls
+function apiRegister(userData) {
+    // POST request to register user
+}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+function apiLogin(credentials) {
+    // POST request to log in user
+}
 
-### Analyzing the Bundle Size
+function apiUpdateUser(userInfo) {
+    // PATCH request to update user information
+}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+function apiFetchShoppingLists(userId) {
+    // GET request to fetch shopping lists for a specific user
+}
 
-### Making a Progressive Web App
+function apiAddShoppingList(newList) {
+    // POST request to add a new shopping list
+}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+function apiUpdateShoppingList(updatedList) {
+    // PATCH request to update an existing shopping list
+}
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+function apiDeleteShoppingList(id) {
+    // DELETE request to remove a shopping list
+}
