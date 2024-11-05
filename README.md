@@ -1,182 +1,130 @@
-// Main Application Component
-function App() {
-    // State for managing user authentication and user data
-    const [user, setUser] = useState(null);
-    
-    // Function to handle user login
-    function login(credentials) {
-        // Call API to authenticate user
-        // If successful, set user state with user data
-    }
-    
-    // Function to handle user logout
-    function logout() {
-        // Clear user data from state and local storage
-    }
-    
-    // Check if user is logged in
-    if (!user) {
-        return <LoginPage onLogin={login} />; // Show login page
-    }
+# Bamboo - Online Shopping Application
 
-    // Render the main application layout with navigation
-    return (
-        <div>
-            <Navbar user={user} onLogout={logout} />
-            <Routes>
-                <Route path="/home" element={<HomePage user={user} />} />
-                <Route path="/profile" element={<ProfilePage user={user} />} />
-                <Route path="/shopping-list" element={<ShoppingListPage user={user} />} />
-                <Route path="/register" element={<RegistrationPage />} />
-            </Routes>
-        </div>
-    );
-}
+## Overview
+Bamboo is an online shopping platform that allows users to browse, search, and purchase products from various categories. The application is built using React.js and Redux Toolkit for a responsive user experience, paired with JSON Server for data persistence. It aims to provide a seamless shopping experience similar to platforms like Amazon, Temu, or Takealot.
 
-// Navbar Component
-function Navbar({ user, onLogout }) {
-    return (
-        <nav>
-            <span>Welcome, {user.username}</span>
-            <button onClick={onLogout}>Logout</button>
-        </nav>
-    );
-}
+## Features
+- **User Authentication**: Secure user registration and login with encrypted credentials.
+- **User Profile Management**: Users can view and update their profile information, including contact details.
+- **Product Management**:
+  - **Browse Products**: Users can view a wide range of products categorized for easy navigation.
+  - **Search Products**: Users can search for specific items by name or category.
+  - **Add to Cart**: Users can add products to their shopping cart for easy checkout.
+  - **Checkout Process**: Secure and straightforward checkout process for purchasing items.
+- **Order Management**: Users can view their past orders and track order statuses.
 
-// Login Page Component
-function LoginPage({ onLogin }) {
-    const [credentials, setCredentials] = useState({ email: '', password: '' });
+## Tech Stack
+- **Frontend**: React.js, Redux Toolkit, React Bootstrap
+- **Backend**: JSON Server (for data persistence)
+- **Authentication**: Custom authentication logic with encrypted credentials
 
-    function handleSubmit(event) {
-        event.preventDefault();
-        onLogin(credentials); // Call login function with credentials
-    }
+## Installation
+To get started with Bamboo, follow these steps:
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <input type="email" onChange={...} />
-            <input type="password" onChange={...} />
-            <button type="submit">Login</button>
-        </form>
-    );
-}
+### Prerequisites
+- Node.js (version 14 or higher)
+- npm (Node Package Manager)
 
-// Registration Page Component
-function RegistrationPage() {
-    const [userData, setUserData] = useState({ email: '', password: '', name: '', surname: '', cell: '' });
+### Clone the Repository
+```bash
 
-    function handleSubmit(event) {
-        event.preventDefault();
-        // Call API to register user with userData
-    }
+wireframes
+-------------------------------------------------
+|                LOGIN PAGE                      |        
+-------------------------------------------------
+|                                                 |
+|              [ App Logo/Image ]                |
+|                                                 |
+|    -----------------------------------------    |
+|    |                                       |    |
+|    |   Email: [_______________________]   |    |
+|    |                                       |    |
+|    |   Password: [_____________________]   |    |
+|    |                                       |    |
+|    |   [ Login Button ]                    |    |
+|    |                                       |    |
+|    |   [ Forgot Password? ]                |    |
+|    |                                       |    |
+|    |   [ Register Here ]                   |    |
+|    -----------------------------------------    |
+|                                                 |
+-------------------------------------------------
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <input type="text" onChange={...} />
-            <button type="submit">Register</button>
-        </form>
-    );
-}
+-------------------------------------------------
+|             REGISTRATION PAGE                 |
+-------------------------------------------------
+|                                                 |
+|              [ App Logo/Image ]                |
+|                                                 |
+|    -----------------------------------------    |
+|    |                                       |    |
+|    |   Name: [_________________________]  |    |
+|    |                                       |    |
+|    |   Surname: [_______________________]  |    |
+|    |                                       |    |
+|    |   Email: [_________________________]  |    |
+|    |                                       |    |
+|    |   Username: [______________________]  |    |
+|    |                                       |    |
+|    |   Password: [_____________________]   |    |
+|    |                                       |    |
+|    |   Cell Number: [____________________] |    |
+|    |                                       |    |
+|    |   [ Register Button ]                  |    |
+|    |                                       |    |
+|    -----------------------------------------    |
+|                                                 |
+-------------------------------------------------
 
-// Profile Page Component
-function ProfilePage({ user }) {
-    const [userInfo, setUserInfo] = useState(user);
+-------------------------------------------------
+|                HOME PAGE                       |
+-------------------------------------------------
+| [ Navbar: Logo | Home | Profile | Logout ]    |
+-------------------------------------------------
+|                                                 |
+|   [ Search Bar: __________________________ ]   |
+|                                                 |
+|   [ Add New Shopping List Button ]              |
+|                                                 |
+|   ------------------------------------------------|
+|   |  Shopping Lists (User's Lists)           |   |
+|   |  ---------------------------------------  |   |
+|   |  | Shopping List 1                     | |   |
+|   |  |   - Item 1                          | |   |
+|   |  |   - Item 2                          | |   |
+|   |  |  [ Edit Button ] [ Delete Button ] | |   |
+|   |  ---------------------------------------  |   |
+|   |  | Shopping List 2                     | |   |
+|   |  |   - Item 1                          | |   |
+|   |  |  [ Edit Button ] [ Delete Button ] | |   |
+|   |  ---------------------------------------  |   |
+|   ------------------------------------------------|
+|                                                 |
+-------------------------------------------------
 
-    function handleUpdate(event) {
-        event.preventDefault();
-        // Call API to update user profile with userInfo
-    }
+-------------------------------------------------
+|                PROFILE PAGE                    |
+-------------------------------------------------
+| [ Navbar: Logo | Home | Profile | Logout ]    |
+-------------------------------------------------
+|                                                 |
+|              [ User's Profile Picture ]        |
+|                                                 |
+|    -----------------------------------------    |
+|    |                                       |    |
+|    |   Name: [_______________________]   |    |
+|    |                                       |    |
+|    |   Surname: [_____________________]   |    |
+|    |                                       |    |
+|    |   Email: [_________________________]  |   |
+|    |                                       |    |
+|    |   Username: [______________________]  |   |
+|    |                                       |    |
+|    |   [ Update Profile Button ]           |    |
+|    |                                       |    |
+|    -----------------------------------------    |
+|                                                 |
+-------------------------------------------------
 
-    return (
-        <form onSubmit={handleUpdate}>
-            <input type="text" value={userInfo.name} onChange={...} />
-            <button type="submit">Update Profile</button>
-        </form>
-    );
-}
 
-// Shopping List Page Component
-function ShoppingListPage({ user }) {
-    const [shoppingLists, setShoppingLists] = useState([]);
 
-    useEffect(() => {
-        // Fetch shopping lists for the logged-in user from the server
-    }, [user]);
-
-    function addShoppingList(newList) {
-        // Call API to add new shopping list
-    }
-
-    function updateShoppingList(updatedList) {
-        // Call API to update existing shopping list
-    }
-
-    function deleteShoppingList(id) {
-        // Call API to delete shopping list by id
-    }
-
-    return (
-        <div>
-            <h2>Your Shopping Lists</h2>
-            <button onClick={addShoppingList}>Add Shopping List</button>
-            {shoppingLists.map(list => (
-                <ShoppingListItem 
-                    key={list.id} 
-                    list={list} 
-                    onUpdate={updateShoppingList} 
-                    onDelete={deleteShoppingList} 
-                />
-            ))}
-        </div>
-    );
-}
-
-// Shopping List Item Component
-function ShoppingListItem({ list, onUpdate, onDelete }) {
-    function handleUpdate() {
-        // Open modal or form to edit the shopping list
-        onUpdate(list); // Update list on form submit
-    }
-
-    return (
-        <div>
-            <h3>{list.name}</h3>
-            <button onClick={handleUpdate}>Edit</button>
-            <button onClick={() => onDelete(list.id)}>Delete</button>
-        </div>
-    );
-}
-
-// Main Data Fetching Logic
-function fetchShoppingLists(userId) {
-    // Fetch shopping lists from JSON server for the logged-in user
-}
-
-// API Calls
-function apiRegister(userData) {
-    // POST request to register user
-}
-
-function apiLogin(credentials) {
-    // POST request to log in user
-}
-
-function apiUpdateUser(userInfo) {
-    // PATCH request to update user information
-}
-
-function apiFetchShoppingLists(userId) {
-    // GET request to fetch shopping lists for a specific user
-}
-
-function apiAddShoppingList(newList) {
-    // POST request to add a new shopping list
-}
-
-function apiUpdateShoppingList(updatedList) {
-    // PATCH request to update an existing shopping list
-}
-
-function apiDeleteShoppingList(id) {
-    // DELETE request to remove a shopping list
-}
