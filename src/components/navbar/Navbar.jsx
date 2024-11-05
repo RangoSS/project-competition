@@ -34,10 +34,14 @@ const Navbar = () => {
   return (
     <div className="navbar">
       <div className="wrapper">
-        <div className="search">
-          <input type="text" placeholder="Search..." />
-          <SearchOutlinedIcon />
-        </div>
+      <div className="logo-container">
+        {/*<img src={logo} alt="Website Logo" className="logo" />*/}
+        <p style={{ fontSize: '3rem', color: '#228B22', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)' }}>
+    Bamboos
+</p>
+
+  
+      </div>
         <div className="items">
           <div className="item">
             <LanguageOutlinedIcon className="icon" />

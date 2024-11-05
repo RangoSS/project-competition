@@ -8,6 +8,7 @@ import Navbar from "../../components/navbar/Navbar";
 
 const LandingPage = () => {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [userRating, setUserRating] = useState(0);
   const [showBookingModal, setShowBookingModal] = useState(false);
@@ -16,6 +17,7 @@ const LandingPage = () => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [totalPrice, setTotalPrice] = useState(0);
+  const [searchTerm, setSearchTerm] = useState(''); // New state for search term
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,6 +26,7 @@ const LandingPage = () => {
         const response = await fetch('http://localhost:4000/api/products');
         const data = await response.json();
         setProducts(data);
+        setFilteredProducts(data); // Initially set filtered products to all products
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -31,6 +34,19 @@ const LandingPage = () => {
 
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    // Filter products based on search term
+    const filtered = products.filter(product => {
+      const lowerCaseTerm = searchTerm.toLowerCase();
+      return (
+        product.name.toLowerCase().includes(lowerCaseTerm) ||
+        product.description.toLowerCase().includes(lowerCaseTerm) ||
+        product.category.toLowerCase().includes(lowerCaseTerm)
+      );
+    });
+    setFilteredProducts(filtered);
+  }, [searchTerm, products]);
 
   // Function to handle product selection
   const handleBook = (product) => {
@@ -77,7 +93,6 @@ const LandingPage = () => {
     setTotalPrice(pricePerUnit * quantity);
 
     // Save to your desired endpoint (replace with your booking logic)
-    // await setDoc(doc(db, "bookings", `${currentUserId}_${selectedProduct.id}`), bookingData);
     alert("Successfully booked! You can add more.");
     handleCloseBookingModal(); // Close modal
   };
@@ -85,9 +100,21 @@ const LandingPage = () => {
   return (
     <div className="landing-page">
       <Navbar />
-      <h1 className="heads">Result for "Bamboo website,order anything"</h1>
+      <h1 className="heads">Result for "Bamboo website, order anything"</h1>
+
+      {/* Search Bar */}
+      <div className="search-bar">
+        <Form.Control
+          type="text"
+          placeholder="Search products..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ width: '300px', marginBottom: '20px' }}
+        />
+      </div>
+
       <div className="product-cards-container">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <div key={product.id} className="product-card">
             <img src={product.photo} alt="Product" className="product-image" style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
             <div className="product-details">
@@ -95,7 +122,7 @@ const LandingPage = () => {
               <p><strong>Location:</strong> {product.storeLocation}</p>
               <p><strong>Category:</strong> {product.category}</p>
               <p><strong>Description:</strong> {product.description}</p>
-              <p><strong>Price:</strong> {product.price}</p>
+              <p><strong>Price:</strong> ${product.price}</p>
               <div className="button-container">
                 <Button className="button primary" onClick={() => { setSelectedProduct(product); setShowDetailsModal(true); }}>
                   View Details
