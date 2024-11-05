@@ -95,6 +95,7 @@ const LandingPage = () => {
               <p><strong>Location:</strong> {product.storeLocation}</p>
               <p><strong>Category:</strong> {product.category}</p>
               <p><strong>Description:</strong> {product.description}</p>
+              <p><strong>Price:</strong> {product.price}</p>
               <div className="button-container">
                 <Button className="button primary" onClick={() => { setSelectedProduct(product); setShowDetailsModal(true); }}>
                   View Details

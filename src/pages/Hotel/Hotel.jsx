@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './productCards.scss';
+import Sidebar from '../../components/sidebar/Sidebar';
 
 const Hotel = () => {
     const [products, setProducts] = useState([]);
@@ -60,6 +61,7 @@ const Hotel = () => {
     return (
         <div className="outer-container">
             <a href="/addProduct" className="button">Add Product</a>
+            
             <div className="product-cards-container">
                 {products.map((product) => (
                     <div key={product.id} className="product-card">
