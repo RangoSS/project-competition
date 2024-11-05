@@ -1,171 +1,127 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, updateDoc, deleteDoc, doc } from 'firebase/firestore';
-import { db, storage } from '../../firebase'; // Firebase configuration
-import { ref, deleteObject, uploadBytes, getDownloadURL } from 'firebase/storage';
-import './hotelCards.scss'; // Import the custom CSS
-import './hotel.scss'
-import Sidebar from '../../components/sidebar/Sidebar';
+import axios from 'axios';
+import './productCards.scss';
 
 const Hotel = () => {
-    const [hotels, setHotels] = useState([]);
-    const [editingHotelId, setEditingHotelId] = useState(null); // To track which hotel is being edited
-    const [editData, setEditData] = useState({}); // Data for the hotel being edited
-    const [newImage, setNewImage] = useState(null); // State to store new image file
+    const [products, setProducts] = useState([]);
+    const [editingProductId, setEditingProductId] = useState(null);
+    const [editData, setEditData] = useState({});
+    const [newImage, setNewImage] = useState(null);
 
-    // Fetch hotel data from Firestore
-    const fetchHotels = async () => {
-        const querySnapshot = await getDocs(collection(db, 'hotels'));
-        const hotelList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setHotels(hotelList);
+    const fetchProducts = async () => {
+        try {
+            const response = await axios.get('http://localhost:4000/api/products');
+            setProducts(response.data);
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
     };
 
     useEffect(() => {
-        fetchHotels(); // Fetch hotels on component mount
+        fetchProducts();
     }, []);
 
-    // Delete hotel
-    const handleDelete = async (hotelId, imageUrls) => {
+    const handleDelete = async (productId) => {
         try {
-            // Delete associated images from Firebase Storage
-            if (imageUrls && imageUrls.length > 0) {
-                for (const imageUrl of imageUrls) {
-                    const imageRef = ref(storage, imageUrl);
-                    await deleteObject(imageRef); // Delete image from storage
-                }
-            }
-
-            // Delete hotel from Firestore
-            await deleteDoc(doc(db, 'hotels', hotelId));
-
-            // Update state after deletion
-            setHotels(hotels.filter(hotel => hotel.id !== hotelId));
+            await axios.delete(`http://localhost:4000/api/products/${productId}`);
+            setProducts(products.filter(product => product.id !== productId));
         } catch (error) {
-            console.error('Error deleting hotel:', error);
+            console.error('Error deleting product:', error);
         }
     };
 
-    // Handle file input change for new image
     const handleImageChange = (e) => {
         if (e.target.files[0]) {
-            setNewImage(e.target.files[0]); // Store new image file
+            setNewImage(e.target.files[0]);
         }
     };
 
-    // Update hotel data
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
-            const hotelDocRef = doc(db, 'hotels', editingHotelId);
-
-            // If there's a new image, upload it to Firebase Storage
+            const updatedData = { ...editData };
             if (newImage) {
-                const imageRef = ref(storage, `hotels/${newImage.name}`);
-                await uploadBytes(imageRef, newImage);
-                const imageUrl = await getDownloadURL(imageRef);
-
-                // Update the imageUrls in the editData with the new image
-                setEditData({ ...editData, imageUrls: [imageUrl] });
+                const formData = new FormData();
+                formData.append('image', newImage);
+                const imageResponse = await axios.post('http://localhost:4000/api/upload', formData);
+                updatedData.photo = imageResponse.data.url;
             }
 
-            // Update hotel data in Firestore
-            await updateDoc(hotelDocRef, editData);
-
-            // Reset editing state
-            setEditingHotelId(null);
+            await axios.put(`http://localhost:4000/api/products/${editingProductId}`, updatedData);
+            setEditingProductId(null);
             setEditData({});
-            setNewImage(null); // Clear the image file input after update
-            fetchHotels(); // Re-fetch hotels after update
+            setNewImage(null);
+            fetchProducts();
         } catch (error) {
-            console.error('Error updating hotel:', error);
+            console.error('Error updating product:', error);
         }
     };
 
     return (
-
-        <div>
-            <div className="con">
-
-                <a href='/addHotel' className='button' >Add Hotel</a>
-            </div>
-
-            <div className="container">
-
-                <div className="sidebar">
-                    <Sidebar />
-                </div>
-
-                <div className="hotel-gallery">
-
-                    {hotels.map((hotel) => (
-                        <div key={hotel.id} className="card">
-                            {editingHotelId === hotel.id ? (
-                                // Display form for updating hotel details
-                        <form onSubmit={handleUpdate}>
-                            <input
-                                type="text"
-                                        placeholder="Address"
-                                        value={editData.address || hotel.address}
-                                        onChange={(e) => setEditData({ ...editData, address: e.target.value })}
-                            />
-                            <input
-                                type="text"
-                                        placeholder="City"
-                                        value={editData.city || hotel.city}
-                                        onChange={(e) => setEditData({ ...editData, city: e.target.value })}
-                            />
-                            <input
-                                type="text"
-                                        placeholder="Hotel Type"
-                                        value={editData.hotelType || hotel.hotelType}
-                                        onChange={(e) => setEditData({ ...editData, hotelType: e.target.value })}
-                            />
-                            <input
-                                type="text"
-                                        placeholder="Phone"
-                                        value={editData.phone || hotel.phone}
-                                        onChange={(e) => setEditData({ ...editData, phone: e.target.value })}
-                            />
-                            <input
-                                type="text"
-                                        placeholder="Price per Day"
-                                        value={editData.pricePerDay || hotel.pricePerDay}
-                                        onChange={(e) => setEditData({ ...editData, pricePerDay: e.target.value })}
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Price per Night"
-                                        value={editData.pricePerNight || hotel.pricePerNight}
-                                        onChange={(e) => setEditData({ ...editData, pricePerNight: e.target.value })}
-                            />
-                                    <input type="file" onChange={handleImageChange} /> {/* File input for new image */}
-                                    <button type="submit">Update Hotel</button>
-                        </form>
-                    ) : (
-                                // Display hotel details on a card
-                        <>
-                                    {hotel.imageUrls && hotel.imageUrls.length > 0 ? (
-                                        <img src={hotel.imageUrls[0]} className="card-img-top" alt="Hotel" />
-                            ) : (
-                                        <p>No image available</p> // Display message if no image
-                            )}
-                            <div className="card-body">
-                                        <h5 className="card-title">{hotel.city}</h5>
-                                        <p className="card-text"><strong>Address:</strong> {hotel.address}</p>
-                                        <p className="card-text"><strong>Hotel Type:</strong> {hotel.hotelType}</p>
-                                        <p className="card-text"><strong>Phone:</strong> {hotel.phone}</p>
-                                        <p className="card-text"><strong>Price per Day:</strong> {hotel.pricePerDay}</p>
-                                        <p className="card-text"><strong>Price per Night:</strong> {hotel.pricePerNight}</p>
-                                        <button className="btn btn-primary" onClick={() => {
-                                            setEditingHotelId(hotel.id);
-                                            setEditData(hotel); // Prepopulate form with current hotel data
-                                }}>Update</button>
-                                        <button className="btn btn-danger" onClick={() => handleDelete(hotel.id, hotel.imageUrls)}>Delete</button>
-                            </div>
-                        </>
-                    )}
-                </div>
-            ))}
-        </div>
+        <div className="outer-container">
+            <a href="/addProduct" className="button">Add Product</a>
+            <div className="product-cards-container">
+                {products.map((product) => (
+                    <div key={product.id} className="product-card">
+                        {editingProductId === product.id ? (
+                            <form onSubmit={handleUpdate}>
+                                <input
+                                    type="text"
+                                    placeholder="Product Name"
+                                    value={editData.name || product.name}
+                                    onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Description"
+                                    value={editData.description || product.description}
+                                    onChange={(e) => setEditData({ ...editData, description: e.target.value })}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Category"
+                                    value={editData.category || product.category}
+                                    onChange={(e) => setEditData({ ...editData, category: e.target.value })}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Location"
+                                    value={editData.storeLocation || product.storeLocation}
+                                    onChange={(e) => setEditData({ ...editData, storeLocation: e.target.value })}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Total Quantity"
+                                    value={editData.totalQuantity || product.totalQuantity}
+                                    onChange={(e) => setEditData({ ...editData, totalQuantity: e.target.value })}
+                                />
+                                <input type="file" onChange={handleImageChange} />
+                                <button type="submit" className="btn-primary">Update Product</button>
+                            </form>
+                        ) : (
+                            <>
+                                {product.photo ? (
+                                    <img src={product.photo} className="product-image" alt="Product" />
+                                ) : (
+                                    <p>No image available</p>
+                                )}
+                                <div className="card-body">
+                                    <h5 className="card-title">{product.name}</h5>
+                                    <p><strong>Description:</strong> {product.description}</p>
+                                    <p><strong>Category:</strong> {product.category}</p>
+                                    <p><strong>Location:</strong> {product.storeLocation}</p>
+                                    <p><strong>Contact:</strong> {product.contact}</p>
+                                    <p><strong>Total Quantity:</strong> {product.totalQuantity}</p>
+                                    <button onClick={() => {
+                                        setEditingProductId(product.id);
+                                        setEditData(product);
+                                    }} className="btn-primary">Update</button>
+                                    <button onClick={() => handleDelete(product.id)} className="btn-danger">Delete</button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                ))}
             </div>
         </div>
     );

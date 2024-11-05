@@ -85,7 +85,7 @@ const LandingPage = () => {
   return (
     <div className="landing-page">
       <Navbar />
-      <h1>Product Listings</h1>
+      <h1 className="heads">Result for "Bamboo website,order anything"</h1>
       <div className="product-cards-container">
         {products.map((product) => (
           <div key={product.id} className="product-card">

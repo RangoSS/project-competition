@@ -12,6 +12,7 @@ import { AuthContext } from "./context/AuthContext";
 import Register from "./pages/login/Register";
 import Hotel from "./pages/Hotel/Hotel";
 import Add_hotel from "./pages/Hotel/Add_hotel";
+import AddProduct from "./pages/Hotel/AddProduct";
 
 import Landing_page from "./pages/home/Landing_page";
 
@@ -55,7 +56,8 @@ function App() {
 
           {/* Hotel routes */}
           <Route path="/hotel" element={<RequireAuth><Hotel /></RequireAuth>} />
-          <Route path="/addhotel" element={<RequireAuth><Add_hotel /></RequireAuth>} />
+            {/* <Route path="/addhotel" element={<RequireAuth><Add_hotel /></RequireAuth>} />*/}
+          <Route path="/add_product" element={<RequireAuth><AddProduct/></RequireAuth>} />
         </Routes>
       </BrowserRouter>
     </div>
