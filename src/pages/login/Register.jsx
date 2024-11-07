@@ -5,36 +5,33 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 
+import './register.scss';  // Import the custom CSS
+
 const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [displayName, setDisplayName] = useState('');
     const [username, setUsername] = useState('');
     const [phone, setPhone] = useState('');
-    const [role, setRole] = useState('user');  // Default role
+    const [role, setRole] = useState('user');
     const [address, setAddress] = useState('');
     const [country, setCountry] = useState('');
     const [image, setImage] = useState(null);
-    const [error, setError] = useState('');  // For error handling
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            // Create user with email and password
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
-
-            // If there's an image, upload it
             let imageUrl = '';
             if (image) {
                 const imageRef = ref(storage, `profileImages/${user.uid}`);
-                await uploadBytes(imageRef, image);  // Upload profile image
+                await uploadBytes(imageRef, image);
                 imageUrl = await getDownloadURL(imageRef);
             }
-
-            // Save user data to Firestore
             await setDoc(doc(db, 'users', user.uid), {
                 username,
                 displayName,
@@ -43,24 +40,21 @@ const Register = () => {
                 country,
                 role,
                 email,
-                profileImageUrl: imageUrl,  // Save image URL
+                profileImageUrl: imageUrl,
                 createdAt: serverTimestamp(),
             });
-
-            // Navigate to login page after successful registration
             navigate('/login');
         } catch (error) {
             console.error('Error registering user:', error);
-            setError('Failed to register. Please try again.');  // Display friendly error message
+            setError('Failed to register. Please try again.');
         }
     };
 
     return (
-        <div className="register">
-            <form className="mt-5" onSubmit={handleSubmit}>
-                <h2>Register</h2>
-                {error && <p className="text-danger">{error}</p>} {/* Display error if exists */}
-
+        <div className="register-container">
+            <form className="register-form" onSubmit={handleSubmit}>
+                <h2 className="register-title">Register</h2>
+                {error && <p className="error-text">{error}</p>}
                 <div className="form-group">
                     <input
                         type="email"
@@ -71,7 +65,6 @@ const Register = () => {
                         required
                     />
                 </div>
-
                 <div className="form-group">
                     <input
                         type="password"
@@ -82,7 +75,6 @@ const Register = () => {
                         required
                     />
                 </div>
-
                 <div className="form-group">
                     <input
                         type="text"
@@ -93,7 +85,6 @@ const Register = () => {
                         required
                     />
                 </div>
-
                 <div className="form-group">
                     <input
                         type="text"
@@ -104,7 +95,6 @@ const Register = () => {
                         required
                     />
                 </div>
-
                 <div className="form-group">
                     <input
                         type="text"
@@ -115,7 +105,6 @@ const Register = () => {
                         required
                     />
                 </div>
-
                 <div className="form-group">
                     <input
                         type="text"
@@ -125,7 +114,6 @@ const Register = () => {
                         onChange={(e) => setAddress(e.target.value)}
                     />
                 </div>
-
                 <div className="form-group">
                     <input
                         type="text"
@@ -135,18 +123,16 @@ const Register = () => {
                         onChange={(e) => setCountry(e.target.value)}
                     />
                 </div>
-
                 <div className="form-group">
-                    <p className="ml-2">Upload Profile Image</p>
+                    <label>Upload Profile Image</label>
                     <input
                         type="file"
                         className="form-control"
                         onChange={(e) => setImage(e.target.files[0])}
                     />
                 </div>
-
-                <div className="form-group">
-                    <label className="mr-2">Role:</label>
+                <div className="form-group role-group">
+                    <label>Role:</label>
                     <div className="form-check form-check-inline">
                         <input
                             className="form-check-input"
@@ -170,8 +156,7 @@ const Register = () => {
                         <label className="form-check-label" htmlFor="roleUser">User</label>
                     </div>
                 </div>
-
-                <button type="submit" className="btn btn-primary">Register</button>
+                <button type="submit" className="btn btn-primary submit-btn">Register</button>
             </form>
         </div>
     );
